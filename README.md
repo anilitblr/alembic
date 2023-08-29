@@ -23,6 +23,7 @@
       - [Create a Migration Scripts](#create-a-migration-scripts)
       - [Create users table](#create-users-table)
       - [Running Migration](#running-migration)
+      - [Add column](#add-column)
       - [Delete all tables in the database](#delete-all-tables-in-the-database)
       - [Datatypes](#datatypes)
 - [References](#references)
@@ -69,7 +70,7 @@ chmod 600 ~/.pgpass
 
 #### Start postgresql service
 
-```bash
+```python
 sudo systemctl enable --now postgresql.service;
 sudo systemctl start postgresql.service;
 sudo systemctl restart postgresql.service;
@@ -102,7 +103,7 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE example to ex;"
 
 #### Execute SQL Commands from psql
 
-```bash
+```python
 psql -h localhost -p 5432 -U ex -d example -w -c "\dt;"
 psql -h localhost -p 5432 -U ex -d example -w -c "\dS device;"
 psql -h localhost -p 5432 -U ex -d example -w -c "SELECT * FROM users;"
@@ -113,21 +114,21 @@ psql -h localhost -p 5432 -U ex -d example -w -c "<Other SQL queries>;"
 
 #### Install virtual environment and activate
 
-```bash
+```python
 python3.10 -m venv venv;
 source venv/bin/activate;
 ```
 
 #### Install alembic
 
-```bash
+```python
 python3.10 -m pip install --upgrade pip
 pip install alembic;
 ```
 
 #### initialize alembic
 
-```bash
+```python
 alembic init alembic
 ```
 
@@ -204,7 +205,23 @@ def downgrade():
 #### Running Migration
 
 ```bash
-alembic upgrade head;
+alembic upgrade head
+```
+
+#### Add column
+
+```python
+from sqlalchemy import Column
+
+def upgrade() -> None:
+    op.add_column(
+        "table-name",
+        Column("column-name", sa.String, nullable=True),
+    )
+
+
+def downgrade() -> None:
+    op.drop_column("table-name", "column-name")
 ```
 
 #### Delete all tables in the database
